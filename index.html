@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Survey · Terapia con Testosterone nelle Donne in Italia</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,700;1,500&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ─── Design tokens ───────────────────────────────────────── */
+    :root {
+      --navy:     #132743;
+      --navy-mid: #1d4070;
+      --teal:     #1a7fa8;
+      --teal-lt:  #daeef7;
+      --coral:    #c03a2b;
+      --green:    #1a7a4a;
+      --bg:       #f0f4f8;
+      --card:     #ffffff;
+      --txt:      #1b2a3b;
+      --muted:    #6b7c8f;
+      --border:   #cfd8e3;
+      --r:        12px;
+      --shadow:   0 4px 28px rgba(19,39,67,.09);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--txt);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* ─── Progress bar ────────────────────────────────────────── */
+    #progress-track {
+      position: fixed; top: 0; left: 0; right: 0; height: 4px;
+      background: var(--border); z-index: 200;
+    }
+    #progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--navy-mid), var(--teal));
+      transition: width .55s cubic-bezier(.4,0,.2,1);
+      width: 0%;
+    }
+
+    /* ─── Header ──────────────────────────────────────────────── */
+    header {
+      width: 100%; background: var(--navy);
+      padding: 18px 32px;
+      display: flex; align-items: center; justify-content: space-between;
+      position: sticky; top: 0; z-index: 100;
+    }
+    .hdr-brand {
+      font-family: 'Cormorant Garamond', serif;
+      color: #fff; font-size: 1.1rem; font-weight: 700;
+      letter-spacing: .02em;
+    }
+    .hdr-step {
+      color: rgba(255,255,255,.6); font-size: .8rem; font-weight: 300;
+    }
+
+    /* ─── Container ───────────────────────────────────────────── */
+    .wrap {
+      width: 100%; max-width: 680px;
+      padding: 44px 20px 80px;
+    }
+
+    /* ─── Steps ───────────────────────────────────────────────── */
+    .step { display: none; }
+    .step.active {
+      display: block;
+      animation: rise .42s ease forwards;
+    }
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ─── Card ────────────────────────────────────────────────── */
+    .card {
+      background: var(--card);
+      border-radius: var(--r);
+      padding: 40px;
+      box-shadow: var(--shadow);
+      margin-bottom: 20px;
+    }
+
+    /* ─── Typography ──────────────────────────────────────────── */
+    .tag {
+      font-size: .68rem; font-weight: 700; letter-spacing: .14em;
+      text-transform: uppercase; color: var(--teal); margin-bottom: 8px;
+    }
+    h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2rem; font-weight: 700;
+      color: var(--navy); line-height: 1.2; margin-bottom: 14px;
+    }
+    h2.stitle {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.55rem; color: var(--navy);
+      line-height: 1.3; margin-bottom: 22px;
+    }
+    p.lead {
+      color: var(--muted); font-size: .93rem;
+      line-height: 1.75; margin-bottom: 16px;
+    }
+
+    /* ─── Question block ──────────────────────────────────────── */
+    .qb { margin-bottom: 30px; }
+    .qlabel {
+      display: block; font-weight: 700; font-size: .93rem;
+      color: var(--txt); margin-bottom: 8px;
+    }
+    .qlabel .req { color: var(--coral); margin-left: 2px; }
+    .qhint {
+      font-size: .78rem; color: var(--muted);
+      font-style: italic; margin-bottom: 10px; margin-top: -4px;
+    }
+
+    /* ─── Option items ────────────────────────────────────────── */
+    .opts { display: flex; flex-direction: column; gap: 7px; }
+    .opt {
+      display: flex; align-items: center; gap: 11px;
+      padding: 11px 15px;
+      border: 1.5px solid var(--border); border-radius: 9px;
+      cursor: pointer; transition: border-color .18s, background .18s;
+      user-select: none; font-size: .91rem;
+    }
+    .opt:hover { border-color: var(--teal); background: var(--teal-lt); }
+    .opt.sel   { border-color: var(--teal); background: var(--teal-lt); }
+    .opt input[type="radio"],
+    .opt input[type="checkbox"] {
+      accent-color: var(--navy-mid);
+      width: 16px; height: 16px; cursor: pointer; flex-shrink: 0;
+    }
+
+    /* ─── Text inputs ─────────────────────────────────────────── */
+    input[type="text"], textarea, select {
+      width: 100%; padding: 10px 14px;
+      border: 1.5px solid var(--border); border-radius: 8px;
+      font-family: 'DM Sans', sans-serif; font-size: .9rem;
+      color: var(--txt); outline: none;
+      transition: border-color .18s; background: #fff;
+    }
+    input[type="text"]:focus, textarea:focus, select:focus {
+      border-color: var(--teal);
+    }
+    textarea { resize: vertical; min-height: 90px; }
+
+    /* ─── Conditional reveal ──────────────────────────────────── */
+    .cond {
+      display: none; margin-top: 10px;
+      padding: 12px 14px; background: #f7fbfd;
+      border-left: 3px solid var(--teal-lt); border-radius: 0 8px 8px 0;
+    }
+    .cond.vis { display: block; }
+    .cond label { font-size: .85rem; color: var(--muted); display: block; margin-bottom: 6px; }
+
+    /* ─── Likert ──────────────────────────────────────────────── */
+    .likert {
+      display: flex; gap: 6px; align-items: stretch;
+      margin-top: 10px; flex-wrap: wrap;
+    }
+    .lk-opt {
+      flex: 1; min-width: 52px;
+      display: flex; flex-direction: column; align-items: center;
+      gap: 8px; padding: 12px 6px;
+      border: 1.5px solid var(--border); border-radius: 9px;
+      cursor: pointer; transition: border-color .18s, background .18s;
+      user-select: none;
+    }
+    .lk-opt:hover { border-color: var(--teal); background: var(--teal-lt); }
+    .lk-opt.sel   { border-color: var(--teal); background: var(--teal-lt); }
+    .lk-opt input { accent-color: var(--navy-mid); width: 16px; height: 16px; cursor: pointer; }
+    .lk-num { font-weight: 700; font-size: 1rem; color: var(--navy-mid); }
+    .lk-anchor { font-size: .68rem; color: var(--muted); text-align: center; line-height: 1.2; }
+
+    /* ─── Divider ─────────────────────────────────────────────── */
+    hr.div { border: none; border-top: 1.5px solid var(--border); margin: 24px 0; }
+
+    /* ─── Buttons ─────────────────────────────────────────────── */
+    .nav { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; }
+    .btn {
+      padding: 12px 26px; border-radius: 9px;
+      font-family: 'DM Sans', sans-serif; font-size: .88rem;
+      font-weight: 700; cursor: pointer; border: none;
+      transition: all .18s; letter-spacing: .01em;
+    }
+    .btn-back {
+      background: transparent; color: var(--navy);
+      border: 1.5px solid var(--border);
+    }
+    .btn-back:hover  { border-color: var(--teal); background: var(--teal-lt); }
+    .btn-next        { background: var(--navy); color: #fff; }
+    .btn-next:hover  { background: var(--navy-mid); }
+    .btn-submit      { background: var(--green); color: #fff; }
+    .btn-submit:hover { background: #145a38; }
+    .btn:disabled    { opacity: .55; cursor: not-allowed; }
+
+    /* ─── Error messages ──────────────────────────────────────── */
+    .err { color: var(--coral); font-size: .79rem; margin-top: 5px; display: none; }
+    .err.vis { display: block; }
+
+    /* ─── Final screens ───────────────────────────────────────── */
+    .final { text-align: center; padding: 50px 24px; }
+    .final .ico { font-size: 3.5rem; margin-bottom: 20px; line-height: 1; }
+    .final h2   { font-family: 'Cormorant Garamond', serif; font-size: 1.75rem;
+                  color: var(--navy); margin-bottom: 16px; }
+    .final p    { color: var(--muted); font-size: .9rem; line-height: 1.7; }
+
+    /* ─── Responsive ──────────────────────────────────────────── */
+    @media (max-width: 540px) {
+      .card  { padding: 24px 18px; }
+      h1     { font-size: 1.55rem; }
+      header { padding: 16px 18px; }
+      .likert { gap: 4px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Progress -->
+<div id="progress-track"><div id="progress-fill"></div></div>
+
+<!-- Header -->
+<header>
+  <span class="hdr-brand">Testosterone &amp; Women · Italy Survey</span>
+  <span class="hdr-step" id="hdr-step"></span>
+</header>
+
+<div class="wrap">
+
+  <!-- ══ STEP 0 · Consenso ══════════════════════════════════════ -->
+  <div class="step active" id="s0">
+    <div class="card">
+      <div class="tag">Survey nazionale · 2025</div>
+      <h1>Pratiche cliniche sulla terapia con testosterone nelle donne in Italia</h1>
+      <p class="lead">
+        Questa survey esplora le attuali pratiche cliniche relative all'utilizzo della terapia con testosterone nelle donne nel contesto italiano.
+        Indaga indicazioni, modalità prescrittive e barriere percepite tra i professionisti sanitari coinvolti nella salute femminile e nella medicina della sessualità.
+      </p>
+      <p class="lead">
+        Il questionario è <strong>totalmente anonimo</strong> e richiede circa 5 minuti.
+        I dati saranno trattati esclusivamente a fini di ricerca scientifica.
+      </p>
+      <hr class="div">
+      <div class="qb">
+        <label class="qlabel">Acconsento alla partecipazione allo studio e al trattamento anonimo dei dati <span class="req">*</span></label>
+        <div class="opts" id="og-consent">
+          <label class="opt"><input type="radio" name="consent" value="Sì"> Sì, acconsento</label>
+          <label class="opt"><input type="radio" name="consent" value="No"> No, non acconsento</label>
+        </div>
+        <div class="err" id="e-consent">Seleziona un'opzione per continuare.</div>
+      </div>
+      <div class="nav">
+        <span></span>
+        <button class="btn btn-next" onclick="handleConsent()">Avanti →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ STEP DECLINED ══════════════════════════════════════════ -->
+  <div class="step" id="s-declined">
+    <div class="card final">
+      <div class="ico">🙏</div>
+      <h2>Grazie per il tuo tempo</h2>
+      <p>Hai scelto di non partecipare allo studio. Se cambiassi idea, puoi ricaricare la pagina per riprendere dall'inizio.</p>
+    </div>
+  </div>
+
+  <!-- ══ STEP 1 · Profilo professionale ════════════════════════ -->
+  <div class="step" id="s1">
+    <div class="card">
+      <div class="tag">Sezione 1 di 6</div>
+      <h2 class="stitle">Profilo professionale</h2>
+
+      <!-- Genere -->
+      <div class="qb">
+        <label class="qlabel">Genere <span class="req">*</span></label>
+        <div class="opts" id="og-gender">
+          <label class="opt"><input type="radio" name="gender" value="Uomo"> Uomo</label>
+          <label class="opt"><input type="radio" name="gender" value="Donna"> Donna</label>
+          <label class="opt"><input type="radio" name="gender" value="Non binario / altro"> Non binario / altro</label>
+          <label class="opt"><input type="radio" name="gender" value="Preferisco non rispondere"> Preferisco non rispondere</label>
+        </div>
+        <div class="err" id="e-gender">Campo obbligatorio.</div>
+      </div>
+
+      <!-- Età (NEW) -->
+      <div class="qb">
+        <label class="qlabel">Fascia d'età <span class="req">*</span></label>
+        <div class="opts" id="og-age">
+          <label class="opt"><input type="radio" name="age" value="<35"> &lt;35 anni</label>
+          <label class="opt"><input type="radio" name="age" value="35–44"> 35–44 anni</label>
+          <label class="opt"><input type="radio" name="age" value="45–54"> 45–54 anni</label>
+          <label class="opt"><input type="radio" name="age" value="≥55"> ≥55 anni</label>
+        </div>
+        <div class="err" id="e-age">Campo obbligatorio.</div>
+      </div>
+
+      <!-- Regione (NEW) -->
+      <div class="qb">
+        <label class="qlabel">Regione di esercizio prevalente <span class="req">*</span></label>
+        <select id="q-region">
+          <option value="">— Seleziona —</option>
+          <option>Abruzzo</option><option>Basilicata</option><option>Calabria</option>
+          <option>Campania</option><option>Emilia-Romagna</option><option>Friuli-Venezia Giulia</option>
+          <option>Lazio</option><option>Liguria</option><option>Lombardia</option>
+          <option>Marche</option><option>Molise</option><option>Piemonte</option>
+          <option>Puglia</option><option>Sardegna</option><option>Sicilia</option>
+          <option>Toscana</option><option>Trentino-Alto Adige</option><option>Umbria</option>
+          <option>Valle d'Aosta</option><option>Veneto</option>
+          <option>Estero</option>
+        </select>
+        <div class="err" id="e-region">Campo obbligatorio.</div>
+      </div>
+
+      <!-- Specializzazione -->
+      <div class="qb">
+        <label class="qlabel">Specializzazione principale <span class="req">*</span></label>
+        <div class="opts" id="og-spec">
+          <label class="opt"><input type="radio" name="spec" value="Endocrinologia"> Endocrinologia</label>
+          <label class="opt"><input type="radio" name="spec" value="Ginecologia"> Ginecologia</label>
+          <label class="opt"><input type="radio" name="spec" value="Urologia / Andrologia"> Urologia / Andrologia</label>
+          <label class="opt"><input type="radio" name="spec" value="Medicina generale"> Medicina generale</label>
+          <label class="opt"><input type="radio" name="spec" value="Psichiatria"> Psichiatria</label>
+          <label class="opt"><input type="radio" name="spec" value="Medicina interna"> Medicina interna</label>
+          <label class="opt"><input type="radio" name="spec" value="Sessuologia clinica"> Sessuologia clinica</label>
+          <label class="opt"><input type="radio" name="spec" value="Altro" id="spec-altro-r"> Altro</label>
+        </div>
+        <div class="cond" id="c-spec">
+          <label>Specifica la tua specializzazione:</label>
+          <input type="text" id="q-spec-o" placeholder="Es. Dermatologia, Neurologia…">
+        </div>
+        <div class="err" id="e-spec">Campo obbligatorio.</div>
+      </div>
+
+      <!-- Anni di esercizio -->
+      <div class="qb">
+        <label class="qlabel">Anni di esercizio professionale <span class="req">*</span></label>
+        <div class="opts" id="og-years">
+          <label class="opt"><input type="radio" name="years" value="<5"> &lt;5 anni</label>
+          <label class="opt"><input type="radio" name="years" value="5–10"> 5–10 anni</label>
+          <label class="opt"><input type="radio" name="years" value="11–20"> 11–20 anni</label>
+          <label class="opt"><input type="radio" name="years" value=">20"> &gt;20 anni</label>
+        </div>
+        <div class="err" id="e-years">Campo obbligatorio.</div>
+      </div>
+
+      <!-- Contesto lavorativo -->
+      <div class="qb">
+        <label class="qlabel">Contesto lavorativo prevalente <span class="req">*</span></label>
+        <div class="opts" id="og-ctx">
+          <label class="opt"><input type="radio" name="ctx" value="SSN – Ospedale"> SSN – Ospedale</label>
+          <label class="opt"><input type="radio" name="ctx" value="SSN – Territoriale (ASL)"> SSN – Territoriale (ASL)</label>
+          <label class="opt"><input type="radio" name="ctx" value="Libera professione"> Libera professione</label>
+          <label class="opt"><input type="radio" name="ctx" value="Università / IRCCS"> Università / IRCCS</label>
+          <label class="opt"><input type="radio" name="ctx" value="Altro" id="ctx-altro-r"> Altro</label>
+        </div>
+        <div class="cond" id="c-ctx">
+          <label>Specifica il contesto lavorativo:</label>
+          <input type="text" id="q-ctx-o" placeholder="">
+        </div>
+        <div class="err" id="e-ctx">Campo obbligatorio.</div>
+      </div>
+
+      <div class="nav">
+        <button class="btn btn-back" onclick="go(0)">← Indietro</button>
+        <button class="btn btn-next" onclick="next(1)">Avanti →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ STEP 2 · Attività clinica e formazione ════════════════ -->
+  <div class="step" id="s2">
+    <div class="card">
+      <div class="tag">Sezione 2 di 6</div>
+      <h2 class="stitle">Attività clinica e formazione</h2>
+
+      <!-- Frequenza pazienti -->
+      <div class="qb">
+        <label class="qlabel">Con quale frequenza gestisci pazienti donne con disfunzioni sessuali? <span class="req">*</span></label>
+        <div class="opts" id="og-freq">
+          <label class="opt"><input type="radio" name="freq" value="Mai"> Mai</label>
+          <label class="opt"><input type="radio" name="freq" value="<1/mese"> Meno di 1 volta al mese</label>
+          <label class="opt"><input type="radio" name="freq" value="1–3/mese"> 1–3 volte al mese</label>
+          <label class="opt"><input type="radio" name="freq" value="1–5/settimana"> 1–5 volte a settimana</label>
+          <label class="opt"><input type="radio" name="freq" value=">5/settimana"> Più di 5 volte a settimana</label>
+        </div>
+        <div class="err" id="e-freq">Campo obbligatorio.</div>
+      </div>
+
+      <!-- Formazione -->
+      <div class="qb">
+        <label class="qlabel">Hai ricevuto formazione specifica in medicina della sessualità? <span class="req">*</span></label>
+        <div class="qhint">Puoi selezionare più opzioni</div>
+        <div class="opts" id="og-train">
+          <label class="opt"><input type="checkbox" name="train" value="Sì, durante la specializzazione"> Sì, durante la specializzazione medica</label>
+          <label class="opt"><input type="checkbox" name="train" value="Sì, Master / Corso specifico"> Sì, durante un Master / Corso di Formazione specifico</label>
+          <label class="opt"><input type="checkbox" name="train" value="No"> No</label>
+          <label class="opt"><input type="checkbox" name="train" value="Altro" id="train-altro-c"> Altro</label>
+        </div>
+        <div class="cond" id="c-train">
+          <label>Specifica il tipo di formazione ricevuta:</label>
+          <input type="text" id="q-train-o" placeholder="Es. FAD, convegni, autoformazione…">
+        </div>
+        <div class="err" id="e-train">Seleziona almeno un'opzione.</div>
+      </div>
+
+      <div class="nav">
+        <button class="btn btn-back" onclick="go(1)">← Indietro</button>
+        <button class="btn btn-next" onclick="next(2)">Avanti →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ STEP 3 · Indicazioni per il testosterone ══════════════ -->
+  <div class="step" id="s3">
+    <div class="card">
+      <div class="tag">Sezione 3 di 6</div>
+      <h2 class="stitle">Indicazioni e parametri per la terapia con testosterone</h2>
+
+      <!-- Condizioni -->
+      <div class="qb">
+        <label class="qlabel">In quali condizioni prendi in considerazione la terapia con testosterone nelle donne? <span class="req">*</span></label>
+        <div class="qhint">Puoi selezionare più opzioni</div>
+        <div class="opts" id="og-cond">
+          <label class="opt"><input type="checkbox" name="cond" value="HSDD (disturbo del desiderio sessuale ipoattivo)"> HSDD (disturbo del desiderio sessuale ipoattivo)</label>
+          <label class="opt"><input type="checkbox" name="cond" value="Menopausa"> Menopausa</label>
+          <label class="opt"><input type="checkbox" name="cond" value="Insufficienza ovarica precoce (POI)"> Insufficienza ovarica precoce (POI)</label>
+          <label class="opt"><input type="checkbox" name="cond" value="Sindrome genito-urinaria della menopausa"> Sindrome genito-urinaria della menopausa</label>
+          <label class="opt"><input type="checkbox" name="cond" value="Disturbi dell'umore"> Disturbi dell'umore</label>
+          <label class="opt"><input type="checkbox" name="cond" value="Non la prescrivo"> Non la prescrivo / Non applicabile</label>
+          <label class="opt"><input type="checkbox" name="cond" value="Altro" id="cond-altro-c"> Altro</label>
+        </div>
+        <div class="cond" id="c-cond">
+          <label>Specifica:</label>
+          <input type="text" id="q-cond-o" placeholder="">
+        </div>
+        <div class="err" id="e-cond">Seleziona almeno un'opzione.</div>
+      </div>
+
+      <!-- Parametri -->
+      <div class="qb">
+        <label class="qlabel">Quali parametri utilizzi per porre indicazione alla terapia? <span class="req">*</span></label>
+        <div class="qhint">Puoi selezionare più opzioni</div>
+        <div class="opts" id="og-params">
+          <label class="opt"><input type="checkbox" name="params" value="Testosterone totale (sierico)"> Testosterone totale (sierico)</label>
+          <label class="opt"><input type="checkbox" name="params" value="Testosterone libero (calcolato o diretto)"> Testosterone libero (calcolato o diretto)</label>
+          <label class="opt"><input type="checkbox" name="params" value="Sintomi clinici (valutazione qualitativa)"> Sintomi clinici (valutazione qualitativa)</label>
+          <label class="opt"><input type="checkbox" name="params" value="Parametri vascolari (es. doppler clitorideo)"> Parametri vascolari (es. doppler clitorideo)</label>
+          <label class="opt"><input type="checkbox" name="params" value="Questionari validati" id="params-q-c"> Questionari validati (es. FSFI, FSDS-R, PROMIS)</label>
+          <label class="opt"><input type="checkbox" name="params" value="Altro" id="params-altro-c"> Altro</label>
+        </div>
+        <div class="cond" id="c-params">
+          <label>Specifica (es. questionari utilizzati, altri parametri):</label>
+          <input type="text" id="q-params-o" placeholder="Es. FSFI, PGIC, valutazione androgenica allargata…">
+        </div>
+        <div class="err" id="e-params">Seleziona almeno un'opzione.</div>
+      </div>
+
+      <!-- Prescrivi T? -->
+      <div class="qb">
+        <label class="qlabel">Prescrivi terapia con testosterone nelle donne? <span class="req">*</span></label>
+        <div class="opts" id="og-presc">
+          <label class="opt"><input type="radio" name="presc" value="Sì, regolarmente"> Sì, regolarmente</label>
+          <label class="opt"><input type="radio" name="presc" value="Sì, occasionalmente"> Sì, occasionalmente</label>
+          <label class="opt"><input type="radio" name="presc" value="No, mai"> No, mai</label>
+        </div>
+        <div class="err" id="e-presc">Campo obbligatorio.</div>
+      </div>
+
+      <div class="nav">
+        <button class="btn btn-back" onclick="go(2)">← Indietro</button>
+        <button class="btn btn-next" onclick="next(3)">Avanti →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ STEP 4 · Modalità prescrittive (condizionale) ══════════ -->
+  <div class="step" id="s4">
+    <div class="card">
+      <div class="tag">Sezione 4 di 6</div>
+      <h2 class="stitle">Modalità prescrittive</h2>
+
+      <!-- Formulazioni -->
+      <div class="qb">
+        <label class="qlabel">Quali formulazioni utilizzi più frequentemente? <span class="req">*</span></label>
+        <div class="qhint">Puoi selezionare più opzioni</div>
+        <div class="opts" id="og-form">
+          <label class="opt"><input type="checkbox" name="form" value="Gel (formulazione commerciale)"> Gel (formulazione commerciale, es. Testogel)</label>
+          <label class="opt"><input type="checkbox" name="form" value="Galenico (gel o crema)"> Galenico (gel o crema)</label>
+          <label class="opt"><input type="checkbox" name="form" value="Iniezioni intramuscolari"> Iniezioni intramuscolari</label>
+          <label class="opt"><input type="checkbox" name="form" value="Cerotto transdermico"> Cerotto transdermico</label>
+          <label class="opt"><input type="checkbox" name="form" value="Pellet sottocutaneo"> Pellet sottocutaneo</label>
+          <label class="opt"><input type="checkbox" name="form" value="Altro" id="form-altro-c"> Altro</label>
+        </div>
+        <div class="cond" id="c-form">
+          <label>Specifica:</label>
+          <input type="text" id="q-form-o" placeholder="">
+        </div>
+        <div class="err" id="e-form">Seleziona almeno un'opzione.</div>
+      </div>
+
+      <!-- Gestione prescrizione -->
+      <div class="qb">
+        <label class="qlabel">Come gestisci la prescrizione di testosterone nelle donne? <span class="req">*</span></label>
+        <div class="qhint">Puoi selezionare più opzioni</div>
+        <div class="opts" id="og-mgmt">
+          <label class="opt"><input type="checkbox" name="mgmt" value="Prescrizione off-label di formulazioni commerciali"> Prescrizione off-label di formulazioni già in commercio</label>
+          <label class="opt"><input type="checkbox" name="mgmt" value="Formulazioni galeniche (tramite farmacia)"> Formulazioni galeniche (tramite farmacia)</label>
+          <label class="opt"><input type="checkbox" name="mgmt" value="Invio a colleghi/e specialisti"> Invio a colleghi/e specialisti</label>
+          <label class="opt"><input type="checkbox" name="mgmt" value="Non prescrivo"> Non prescrivo direttamente</label>
+          <label class="opt"><input type="checkbox" name="mgmt" value="Altro" id="mgmt-altro-c"> Altro</label>
+        </div>
+        <div class="cond" id="c-mgmt">
+          <label>Specifica:</label>
+          <input type="text" id="q-mgmt-o" placeholder="">
+        </div>
+        <div class="err" id="e-mgmt">Seleziona almeno un'opzione.</div>
+      </div>
+
+      <div class="nav">
+        <button class="btn btn-back" onclick="go(3)">← Indietro</button>
+        <button class="btn btn-next" onclick="next(4)">Avanti →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ STEP 5 · Fonti e barriere ══════════════════════════════ -->
+  <div class="step" id="s5">
+    <div class="card">
+      <div class="tag">Sezione 5 di 6</div>
+      <h2 class="stitle">Fonti di riferimento e barriere percepite</h2>
+
+      <!-- Fonte di riferimento -->
+      <div class="qb">
+        <label class="qlabel">Qual è la tua principale fonte di riferimento per questa terapia? <span class="req">*</span></label>
+        <div class="opts" id="og-ref">
+          <label class="opt"><input type="radio" name="ref" value="Linee guida internazionali (ISSWSH, EAU, EMAS)"> Linee guida internazionali (es. ISSWSH, EAU, EMAS)</label>
+          <label class="opt"><input type="radio" name="ref" value="Esperienza clinica personale"> Esperienza clinica personale</label>
+          <label class="opt"><input type="radio" name="ref" value="Letteratura medica peer-reviewed"> Letteratura medica (articoli peer-reviewed)</label>
+          <label class="opt"><input type="radio" name="ref" value="Opinion leaders / colleghi/e"> Opinion leaders / colleghi/e</label>
+          <label class="opt"><input type="radio" name="ref" value="Altro" id="ref-altro-r"> Altro</label>
+        </div>
+        <div class="cond" id="c-ref">
+          <label>Specifica:</label>
+          <input type="text" id="q-ref-o" placeholder="">
+        </div>
+        <div class="err" id="e-ref">Campo obbligatorio.</div>
+      </div>
+
+      <!-- Barriere -->
+      <div class="qb">
+        <label class="qlabel">Quali sono, secondo te, le principali barriere alla prescrizione di testosterone nelle donne in Italia? <span class="req">*</span></label>
+        <div class="qhint">Puoi selezionare più opzioni</div>
+        <div class="opts" id="og-barr">
+          <label class="opt"><input type="checkbox" name="barr" value="Mancanza di formulazioni approvate per le donne"> Mancanza di formulazioni specificamente approvate per le donne</label>
+          <label class="opt"><input type="checkbox" name="barr" value="Scarsa formazione specifica"> Scarsa formazione specifica in merito</label>
+          <label class="opt"><input type="checkbox" name="barr" value="Timore degli effetti collaterali (es. virilizzazione)"> Timore degli effetti collaterali (es. virilizzazione)</label>
+          <label class="opt"><input type="checkbox" name="barr" value="Difficoltà di accesso ai farmaci"> Difficoltà di accesso ai farmaci</label>
+          <label class="opt"><input type="checkbox" name="barr" value="Costi a carico della paziente"> Costi (a carico della paziente)</label>
+          <label class="opt"><input type="checkbox" name="barr" value="Resistenza culturale / stigma"> Resistenza culturale o stigma</label>
+          <label class="opt"><input type="checkbox" name="barr" value="Incertezza normativa / medico-legale"> Incertezza normativa / medico-legale</label>
+          <label class="opt"><input type="checkbox" name="barr" value="Altro" id="barr-altro-c"> Altro</label>
+        </div>
+        <div class="cond" id="c-barr">
+          <label>Specifica:</label>
+          <input type="text" id="q-barr-o" placeholder="">
+        </div>
+        <div class="err" id="e-barr">Seleziona almeno un'opzione.</div>
+      </div>
+
+      <div class="nav">
+        <button class="btn btn-back" id="btn-back-5" onclick="backFrom5()">← Indietro</button>
+        <button class="btn btn-next" onclick="next(5)">Avanti →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ STEP 6 · Opinioni e commenti ══════════════════════════ -->
+  <div class="step" id="s6">
+    <div class="card">
+      <div class="tag">Sezione 6 di 6</div>
+      <h2 class="stitle">Opinioni e commenti finali</h2>
+
+      <!-- Comfort Likert -->
+      <div class="qb">
+        <label class="qlabel">Quanto ti senti a tuo agio nel prescrivere testosterone nelle donne? <span class="req">*</span></label>
+        <div class="qhint">1 = Per niente a mio agio · 5 = Completamente a mio agio</div>
+        <div class="likert" id="og-comfort">
+          <label class="lk-opt">
+            <input type="radio" name="comfort" value="1">
+            <span class="lk-num">1</span>
+            <span class="lk-anchor">Per niente</span>
+          </label>
+          <label class="lk-opt">
+            <input type="radio" name="comfort" value="2">
+            <span class="lk-num">2</span>
+            <span class="lk-anchor"></span>
+          </label>
+          <label class="lk-opt">
+            <input type="radio" name="comfort" value="3">
+            <span class="lk-num">3</span>
+            <span class="lk-anchor">Neutro</span>
+          </label>
+          <label class="lk-opt">
+            <input type="radio" name="comfort" value="4">
+            <span class="lk-num">4</span>
+            <span class="lk-anchor"></span>
+          </label>
+          <label class="lk-opt">
+            <input type="radio" name="comfort" value="5">
+            <span class="lk-num">5</span>
+            <span class="lk-anchor">Completa&shy;mente</span>
+          </label>
+        </div>
+        <div class="err" id="e-comfort">Seleziona un valore.</div>
+      </div>
+
+      <!-- Miglioramenti -->
+      <div class="qb">
+        <label class="qlabel">Cosa migliorerebbe l'utilizzo appropriato della terapia con testosterone nelle donne in Italia? <span class="req">*</span></label>
+        <div class="qhint">Puoi selezionare più opzioni</div>
+        <div class="opts" id="og-impr">
+          <label class="opt"><input type="checkbox" name="impr" value="Maggiori evidenze scientifiche"> Maggiori evidenze scientifiche</label>
+          <label class="opt"><input type="checkbox" name="impr" value="Linee guida italiane dedicate"> Linee guida italiane dedicate</label>
+          <label class="opt"><input type="checkbox" name="impr" value="Approvazione di farmaci con indicazione specifica"> Approvazione di farmaci con indicazione specifica per le donne</label>
+          <label class="opt"><input type="checkbox" name="impr" value="Formazione specifica per i professionisti"> Formazione specifica per i professionisti</label>
+          <label class="opt"><input type="checkbox" name="impr" value="Maggiore informazione / sensibilizzazione delle pazienti"> Maggiore informazione / sensibilizzazione delle pazienti</label>
+          <label class="opt"><input type="checkbox" name="impr" value="Rimborso SSN"> Rimborso SSN</label>
+          <label class="opt"><input type="checkbox" name="impr" value="Altro" id="impr-altro-c"> Altro</label>
+        </div>
+        <div class="cond" id="c-impr">
+          <label>Specifica:</label>
+          <input type="text" id="q-impr-o" placeholder="">
+        </div>
+        <div class="err" id="e-impr">Seleziona almeno un'opzione.</div>
+      </div>
+
+      <!-- Commenti liberi -->
+      <div class="qb">
+        <label class="qlabel">
+          Hai commenti o esperienze cliniche rilevanti sull'uso della terapia con testosterone nelle donne nel contesto italiano?
+          <em style="font-weight:300"> (facoltativo)</em>
+        </label>
+        <textarea id="q-comments" placeholder="Scrivi qui i tuoi commenti…"></textarea>
+      </div>
+
+      <div class="nav">
+        <button class="btn btn-back" onclick="go(5)">← Indietro</button>
+        <button class="btn btn-submit" id="btn-submit" onclick="submitSurvey()">✓ Invia risposte</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ THANK YOU ══════════════════════════════════════════════ -->
+  <div class="step" id="s-thanks">
+    <div class="card final">
+      <div class="ico">✅</div>
+      <h2>Grazie per la tua partecipazione!</h2>
+      <p>Le tue risposte sono state registrate con successo.<br>
+        Il tuo contributo è fondamentale per migliorare la comprensione delle pratiche cliniche relative alla terapia con testosterone nelle donne in Italia.</p>
+    </div>
+  </div>
+
+  <!-- ══ ERROR ══════════════════════════════════════════════════ -->
+  <div class="step" id="s-error">
+    <div class="card final">
+      <div class="ico">⚠️</div>
+      <h2>Errore nell'invio</h2>
+      <p>Si è verificato un problema durante l'invio delle risposte.<br>
+         Per favore riprova, o contatta l'amministratore dello studio.</p>
+      <button class="btn btn-next" onclick="go(6)" style="margin-top:24px">← Torna al questionario</button>
+    </div>
+  </div>
+
+</div><!-- /wrap -->
+
+<script>
+/* ================================================================
+   CONFIGURATION
+   Sostituisci l'URL qui sotto con l'URL del tuo Google Apps Script
+   dopo il deployment come Web App.
+================================================================= */
+const SCRIPT_URL = "YOUR_GOOGLE_APPS_SCRIPT_URL_HERE";
+
+/* ================================================================
+   Step management
+================================================================= */
+let curStep = 0;
+let prescribes = true; // se false, step 4 viene saltato
+
+const STEP_IDS = ['s0','s1','s2','s3','s4','s5','s6'];
+
+function showStep(id) {
+  document.querySelectorAll('.step').forEach(el => el.classList.remove('active'));
+  const el = document.getElementById(id);
+  if (el) { el.classList.add('active'); window.scrollTo({ top: 0, behavior: 'smooth' }); }
+  updateUI(id);
+}
+
+function go(n) {
+  curStep = n;
+  showStep('s' + n);
+}
+
+function updateUI(id) {
+  const fill = document.getElementById('progress-fill');
+  const lbl  = document.getElementById('hdr-step');
+  const numeric = STEP_IDS.indexOf(id);
+  if (numeric <= 0) {
+    fill.style.width = numeric === 0 ? '0%' : '100%';
+    lbl.textContent = '';
+  } else {
+    fill.style.width = Math.round((numeric / (STEP_IDS.length - 1)) * 100) + '%';
+    lbl.textContent = `Sezione ${numeric} di 6`;
+  }
+}
+
+/* ================================================================
+   Consent gate
+================================================================= */
+function handleConsent() {
+  const v = radio('consent');
+  if (!v) { show('e-consent'); return; }
+  hide('e-consent');
+  v === 'Sì' ? go(1) : showStep('s-declined');
+}
+
+/* ================================================================
+   Step-by-step navigation with validation
+================================================================= */
+function next(fromStep) {
+  if (!validate(fromStep)) return;
+
+  if (fromStep === 3) {
+    prescribes = radio('presc') !== 'No, mai';
+    go(prescribes ? 4 : 5);
+  } else {
+    go(fromStep + 1);
+  }
+}
+
+function backFrom5() {
+  go(prescribes ? 4 : 3);
+}
+
+/* ================================================================
+   Validation
+================================================================= */
+function validate(step) {
+  let ok = true;
+
+  const req = (field, errId, type) => {
+    const valid = type === 'radio'    ? !!radio(field)
+                : type === 'check'    ? checkAny(field)
+                : type === 'select'   ? !!selVal(field)
+                : false;
+    valid ? hide(errId) : (show(errId), ok = false);
+  };
+
+  if (step === 1) {
+    req('gender', 'e-gender', 'radio');
+    req('age',    'e-age',    'radio');
+    if (!selVal('q-region')) { show('e-region'); ok = false; } else hide('e-region');
+    req('spec',   'e-spec',   'radio');
+    req('years',  'e-years',  'radio');
+    req('ctx',    'e-ctx',    'radio');
+  }
+  if (step === 2) {
+    req('freq',  'e-freq',  'radio');
+    req('train', 'e-train', 'check');
+  }
+  if (step === 3) {
+    req('cond',  'e-cond',  'check');
+    req('params','e-params','check');
+    req('presc', 'e-presc', 'radio');
+  }
+  if (step === 4) {
+    req('form', 'e-form', 'check');
+    req('mgmt', 'e-mgmt', 'check');
+  }
+  if (step === 5) {
+    req('ref',  'e-ref',  'radio');
+    req('barr', 'e-barr', 'check');
+  }
+  if (step === 6) {
+    req('comfort', 'e-comfort', 'radio');
+    req('impr',    'e-impr',    'check');
+  }
+  return ok;
+}
+
+/* ================================================================
+   Submit
+================================================================= */
+function submitSurvey() {
+  if (!validate(6)) return;
+
+  const payload = {
+    timestamp:             new Date().toISOString(),
+    consent:               radio('consent'),
+    gender:                radio('gender'),
+    age:                   radio('age'),
+    region:                selVal('q-region'),
+    specialization:        radio('spec'),
+    specialization_other:  txt('q-spec-o'),
+    years_practice:        radio('years'),
+    work_context:          radio('ctx'),
+    work_context_other:    txt('q-ctx-o'),
+    freq_female_sd:        radio('freq'),
+    training:              checks('train'),
+    training_other:        txt('q-train-o'),
+    conditions_t:          checks('cond'),
+    conditions_t_other:    txt('q-cond-o'),
+    parameters_t:          checks('params'),
+    parameters_t_other:    txt('q-params-o'),
+    prescribes_t:          radio('presc'),
+    formulations:          checks('form'),
+    formulations_other:    txt('q-form-o'),
+    prescription_mgmt:     checks('mgmt'),
+    prescription_mgmt_other: txt('q-mgmt-o'),
+    reference_source:      radio('ref'),
+    reference_source_other: txt('q-ref-o'),
+    barriers:              checks('barr'),
+    barriers_other:        txt('q-barr-o'),
+    comfort_level:         radio('comfort'),
+    improvements:          checks('impr'),
+    improvements_other:    txt('q-impr-o'),
+    comments:              txt('q-comments'),
+  };
+
+  const btn = document.getElementById('btn-submit');
+  btn.textContent = 'Invio in corso…';
+  btn.disabled = true;
+
+  fetch(SCRIPT_URL, {
+    method: 'POST',
+    mode: 'no-cors',            // necessario per Google Apps Script
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  })
+  .then(() => showStep('s-thanks'))
+  .catch(() => {
+    btn.textContent = '✓ Invia risposte';
+    btn.disabled = false;
+    showStep('s-error');
+  });
+}
+
+/* ================================================================
+   Helpers: DOM utilities
+================================================================= */
+const radio  = name => { const el = document.querySelector(`input[name="${name}"]:checked`); return el ? el.value : null; };
+const checks = name => [...document.querySelectorAll(`input[name="${name}"]:checked`)].map(e => e.value).join('; ');
+const checkAny = name => document.querySelectorAll(`input[name="${name}"]:checked`).length > 0;
+const selVal = id => { const el = document.getElementById(id); return el ? el.value : ''; };
+const txt    = id => { const el = document.getElementById(id); return el ? el.value.trim() : ''; };
+const show   = id => document.getElementById(id)?.classList.add('vis');
+const hide   = id => document.getElementById(id)?.classList.remove('vis');
+const toggle = (id, on) => document.getElementById(id)?.classList.toggle('vis', on);
+
+/* ================================================================
+   Conditional field wiring
+================================================================= */
+function wire() {
+  // Highlight selected option items (radio + checkbox)
+  document.querySelectorAll('.opts').forEach(grp => {
+    grp.addEventListener('change', () => {
+      grp.querySelectorAll('.opt').forEach(item => {
+        const inp = item.querySelector('input');
+        item.classList.toggle('sel', inp?.checked ?? false);
+      });
+    });
+  });
+
+  // Likert highlights
+  document.querySelectorAll('.likert').forEach(grp => {
+    grp.addEventListener('change', () => {
+      grp.querySelectorAll('.lk-opt').forEach(item => {
+        const inp = item.querySelector('input');
+        item.classList.toggle('sel', inp?.checked ?? false);
+      });
+    });
+  });
+
+  // Specializzazione "Altro"
+  document.querySelectorAll('input[name="spec"]').forEach(r =>
+    r.addEventListener('change', () => toggle('c-spec', r.value === 'Altro' && r.checked))
+  );
+
+  // Contesto "Altro"
+  document.querySelectorAll('input[name="ctx"]').forEach(r =>
+    r.addEventListener('change', () => toggle('c-ctx', r.value === 'Altro' && r.checked))
+  );
+
+  // Formazione "Altro"
+  byId('train-altro-c')?.addEventListener('change', function() { toggle('c-train', this.checked); });
+
+  // Condizioni "Altro"
+  byId('cond-altro-c')?.addEventListener('change', function() { toggle('c-cond', this.checked); });
+
+  // Parametri: mostra se "Questionari validati" o "Altro"
+  ['params-q-c','params-altro-c'].forEach(id =>
+    byId(id)?.addEventListener('change', () => {
+      toggle('c-params', byId('params-q-c')?.checked || byId('params-altro-c')?.checked);
+    })
+  );
+
+  // Formulazioni "Altro"
+  byId('form-altro-c')?.addEventListener('change', function() { toggle('c-form', this.checked); });
+
+  // Gestione "Altro"
+  byId('mgmt-altro-c')?.addEventListener('change', function() { toggle('c-mgmt', this.checked); });
+
+  // Fonte "Altro"
+  document.querySelectorAll('input[name="ref"]').forEach(r =>
+    r.addEventListener('change', () => toggle('c-ref', r.value === 'Altro' && r.checked))
+  );
+
+  // Barriere "Altro"
+  byId('barr-altro-c')?.addEventListener('change', function() { toggle('c-barr', this.checked); });
+
+  // Miglioramenti "Altro"
+  byId('impr-altro-c')?.addEventListener('change', function() { toggle('c-impr', this.checked); });
+}
+
+const byId = id => document.getElementById(id);
+
+/* ================================================================
+   Init
+================================================================= */
+wire();
+showStep('s0');
+</script>
+</body>
+</html>
