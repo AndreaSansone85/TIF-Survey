@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="it">
 <head>
   <meta charset="UTF-8" />
@@ -387,6 +386,7 @@
       <!-- Frequenza pazienti -->
       <div class="qb">
         <label class="qlabel">Con quale frequenza gestisci pazienti donne con disfunzioni sessuali? <span class="req">*</span></label>
+        <div class="qhint">Per "donne" si intenderà d'ora in avanti <strong>donne cisgender</strong>, salvo ove diversamente specificato.</div>
         <div class="opts" id="og-freq">
           <label class="opt"><input type="radio" name="freq" value="Mai"> Mai</label>
           <label class="opt"><input type="radio" name="freq" value="<1/mese"> Meno di 1 volta al mese</label>
@@ -430,13 +430,15 @@
       <!-- Condizioni -->
       <div class="qb">
         <label class="qlabel">In quali condizioni prendi in considerazione la terapia con testosterone nelle donne? <span class="req">*</span></label>
-        <div class="qhint">Puoi selezionare più opzioni</div>
+        <div class="qhint">Puoi selezionare più opzioni. Specifica tra parentesi se l'utilizzo è in ambito <strong>sistemico</strong>, <strong>locale</strong> o <strong>entrambi</strong>.</div>
         <div class="opts" id="og-cond">
-          <label class="opt"><input type="checkbox" name="cond" value="HSDD (disturbo del desiderio sessuale ipoattivo)"> HSDD (disturbo del desiderio sessuale ipoattivo)</label>
-          <label class="opt"><input type="checkbox" name="cond" value="Menopausa"> Menopausa</label>
-          <label class="opt"><input type="checkbox" name="cond" value="Insufficienza ovarica precoce (POI)"> Insufficienza ovarica precoce (POI)</label>
-          <label class="opt"><input type="checkbox" name="cond" value="Sindrome genito-urinaria della menopausa"> Sindrome genito-urinaria della menopausa</label>
-          <label class="opt"><input type="checkbox" name="cond" value="Disturbi dell'umore"> Disturbi dell'umore</label>
+          <label class="opt"><input type="checkbox" name="cond" value="HSDD (disturbo del desiderio sessuale ipoattivo)"> HSDD – disturbo del desiderio sessuale ipoattivo <em>(sistemica)</em></label>
+          <label class="opt"><input type="checkbox" name="cond" value="Menopausa"> Menopausa <em>(sistemica / locale)</em></label>
+          <label class="opt"><input type="checkbox" name="cond" value="Insufficienza ovarica precoce (POI)"> Insufficienza ovarica precoce – POI <em>(sistemica)</em></label>
+          <label class="opt"><input type="checkbox" name="cond" value="Sindrome genito-urinaria della menopausa"> Sindrome genito-urinaria della menopausa <em>(locale)</em></label>
+          <label class="opt"><input type="checkbox" name="cond" value="Vulvodinia"> Vulvodinia <em>(locale)</em></label>
+          <label class="opt"><input type="checkbox" name="cond" value="Vestibolodinia provocata"> Vestibolodinia provocata <em>(locale)</em></label>
+          <label class="opt"><input type="checkbox" name="cond" value="Disturbi dell'umore"> Disturbi dell'umore <em>(sistemica)</em></label>
           <label class="opt"><input type="checkbox" name="cond" value="Non la prescrivo"> Non la prescrivo / Non applicabile</label>
           <label class="opt"><input type="checkbox" name="cond" value="Altro" id="cond-altro-c"> Altro</label>
         </div>
@@ -475,6 +477,17 @@
           <label class="opt"><input type="radio" name="presc" value="No, mai"> No, mai</label>
         </div>
         <div class="err" id="e-presc">Campo obbligatorio.</div>
+      </div>
+
+      <!-- Sistemica o locale? (condizionale) -->
+      <div class="qb" id="qb-route" style="display:none">
+        <label class="qlabel">Se sì, prescrivi terapia sistemica o locale? <span class="req">*</span></label>
+        <div class="qhint">Puoi selezionare più opzioni</div>
+        <div class="opts" id="og-route">
+          <label class="opt"><input type="checkbox" name="route" value="Sistemica"> Sistemica</label>
+          <label class="opt"><input type="checkbox" name="route" value="Locale"> Locale</label>
+        </div>
+        <div class="err" id="e-route">Seleziona almeno un'opzione.</div>
       </div>
 
       <div class="nav">
@@ -525,6 +538,29 @@
           <input type="text" id="q-mgmt-o" placeholder="">
         </div>
         <div class="err" id="e-mgmt">Seleziona almeno un'opzione.</div>
+      </div>
+
+      <!-- Monitoraggio in corso di terapia (NEW) -->
+      <div class="qb">
+        <label class="qlabel">Quali parametri monitori in corso di terapia con testosterone? <span class="req">*</span></label>
+        <div class="qhint">Puoi selezionare più opzioni</div>
+        <div class="opts" id="og-monitor">
+          <label class="opt"><input type="checkbox" name="monitor" value="Testosterone totale sierico"> Testosterone totale sierico</label>
+          <label class="opt"><input type="checkbox" name="monitor" value="Testosterone libero"> Testosterone libero (calcolato o diretto)</label>
+          <label class="opt"><input type="checkbox" name="monitor" value="SHBG"> SHBG</label>
+          <label class="opt"><input type="checkbox" name="monitor" value="Ematocrito / emoglobina"> Ematocrito / emoglobina</label>
+          <label class="opt"><input type="checkbox" name="monitor" value="Profilo lipidico"> Profilo lipidico</label>
+          <label class="opt"><input type="checkbox" name="monitor" value="Funzionalità epatica"> Funzionalità epatica</label>
+          <label class="opt"><input type="checkbox" name="monitor" value="Segni clinici di virilizzazione"> Segni clinici di virilizzazione (acne, irsutismo, alterazioni vocali)</label>
+          <label class="opt"><input type="checkbox" name="monitor" value="Outcome PRO (questionari)"> Outcome riferiti dalla paziente – PRO (es. FSFI, PGIC)</label>
+          <label class="opt"><input type="checkbox" name="monitor" value="Non monitoro parametri specifici"> Non monitoro parametri specifici</label>
+          <label class="opt"><input type="checkbox" name="monitor" value="Altro" id="monitor-altro-c"> Altro</label>
+        </div>
+        <div class="cond" id="c-monitor">
+          <label>Specifica:</label>
+          <input type="text" id="q-monitor-o" placeholder="">
+        </div>
+        <div class="err" id="e-monitor">Seleziona almeno un'opzione.</div>
       </div>
 
       <div class="nav">
@@ -690,7 +726,7 @@
    Sostituisci l'URL qui sotto con l'URL del tuo Google Apps Script
    dopo il deployment come Web App.
 ================================================================= */
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyVp6l12luYBE9m88bIJgKF0V5dGM7QI1lWxTT0GJ41tOogKiiGxOwf_mTzbHpHSlT9TA/exec";
+const SCRIPT_URL = "YOUR_GOOGLE_APPS_SCRIPT_URL_HERE";
 
 /* ================================================================
    Step management
@@ -783,10 +819,15 @@ function validate(step) {
     req('cond',  'e-cond',  'check');
     req('params','e-params','check');
     req('presc', 'e-presc', 'radio');
+    // Valida "route" solo se prescrive
+    if (radio('presc') && radio('presc') !== 'No, mai') {
+      req('route', 'e-route', 'check');
+    }
   }
   if (step === 4) {
-    req('form', 'e-form', 'check');
-    req('mgmt', 'e-mgmt', 'check');
+    req('form',    'e-form',    'check');
+    req('mgmt',    'e-mgmt',    'check');
+    req('monitor', 'e-monitor', 'check');
   }
   if (step === 5) {
     req('ref',  'e-ref',  'radio');
@@ -824,10 +865,13 @@ function submitSurvey() {
     parameters_t:          checks('params'),
     parameters_t_other:    txt('q-params-o'),
     prescribes_t:          radio('presc'),
+    route_systemic_local:  checks('route'),
     formulations:          checks('form'),
     formulations_other:    txt('q-form-o'),
     prescription_mgmt:     checks('mgmt'),
     prescription_mgmt_other: txt('q-mgmt-o'),
+    monitoring_params:     checks('monitor'),
+    monitoring_params_other: txt('q-monitor-o'),
     reference_source:      radio('ref'),
     reference_source_other: txt('q-ref-o'),
     barriers:              checks('barr'),
@@ -891,6 +935,18 @@ function wire() {
       });
     });
   });
+
+  // Prescrivi T → mostra/nascondi domanda sistemica/locale
+  document.querySelectorAll('input[name="presc"]').forEach(r =>
+    r.addEventListener('change', () => {
+      const showRoute = r.checked && r.value !== 'No, mai';
+      document.getElementById('qb-route').style.display = showRoute ? 'block' : 'none';
+      if (!showRoute) document.querySelectorAll('input[name="route"]').forEach(c => c.checked = false);
+    })
+  );
+
+  // Monitoraggio "Altro"
+  byId('monitor-altro-c')?.addEventListener('change', function() { toggle('c-monitor', this.checked); });
 
   // Specializzazione "Altro"
   document.querySelectorAll('input[name="spec"]').forEach(r =>
