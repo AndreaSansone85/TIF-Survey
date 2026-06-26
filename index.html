@@ -221,6 +221,44 @@
       header { padding: 16px 18px; }
       .likert { gap: 4px; }
     }
+
+    /* ─── Per-condition route picker ─────────────────────────── */
+    .cond-wrap { display: flex; flex-direction: column; gap: 4px; }
+    .route-pick {
+      display: none;
+      margin: 2px 0 4px 32px;
+      padding: 10px 14px 10px;
+      background: var(--teal-lt);
+      border: 1.5px solid #aad4e8;
+      border-radius: 0 8px 8px 8px;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-items: center;
+    }
+    .route-pick.vis { display: flex; }
+    .rp-label {
+      font-size: .73rem; font-weight: 700; color: var(--navy-mid);
+      text-transform: uppercase; letter-spacing: .06em;
+      flex: 0 0 100%; margin-bottom: 2px;
+    }
+    .rp-opt {
+      display: flex; align-items: center; gap: 6px;
+      font-size: .84rem; padding: 6px 13px;
+      border: 1.5px solid #9fcde2; border-radius: 20px;
+      cursor: pointer; background: #fff;
+      transition: background .15s, border-color .15s, color .15s;
+      user-select: none;
+    }
+    .rp-opt:hover { background: #c4e6f4; border-color: var(--teal); }
+    .rp-opt.sel   { background: var(--teal); color: #fff; border-color: var(--teal); }
+    .rp-opt input[type="radio"] {
+      accent-color: #fff; width: 14px; height: 14px; cursor: pointer;
+    }
+    .rp-err {
+      color: var(--coral); font-size: .76rem;
+      flex: 0 0 100%; margin-top: 2px; display: none;
+    }
+    .rp-err.vis { display: block; }
   </style>
 </head>
 <body>
@@ -239,7 +277,7 @@
   <!-- ══ STEP 0 · Consenso ══════════════════════════════════════ -->
   <div class="step active" id="s0">
     <div class="card">
-      <div class="tag">Survey nazionale · 2025</div>
+      <div class="tag">Survey nazionale · 2026</div>
       <h1>Pratiche cliniche sulla terapia con testosterone nelle donne in Italia</h1>
       <p class="lead">
         Questa survey esplora le attuali pratiche cliniche relative all'utilizzo della terapia con testosterone nelle donne nel contesto italiano.
@@ -430,17 +468,89 @@
       <!-- Condizioni -->
       <div class="qb">
         <label class="qlabel">In quali condizioni prendi in considerazione la terapia con testosterone nelle donne? <span class="req">*</span></label>
-        <div class="qhint">Puoi selezionare più opzioni. Specifica tra parentesi se l'utilizzo è in ambito <strong>sistemico</strong>, <strong>locale</strong> o <strong>entrambi</strong>.</div>
+        <div class="qhint">Per ogni condizione selezionata, indica se utilizzi la via <strong>sistemica</strong>, <strong>locale</strong> o <strong>entrambe</strong>.</div>
         <div class="opts" id="og-cond">
-          <label class="opt"><input type="checkbox" name="cond" value="HSDD (disturbo del desiderio sessuale ipoattivo)"> HSDD – disturbo del desiderio sessuale ipoattivo <em>(sistemica)</em></label>
-          <label class="opt"><input type="checkbox" name="cond" value="Menopausa"> Menopausa <em>(sistemica / locale)</em></label>
-          <label class="opt"><input type="checkbox" name="cond" value="Insufficienza ovarica precoce (POI)"> Insufficienza ovarica precoce – POI <em>(sistemica)</em></label>
-          <label class="opt"><input type="checkbox" name="cond" value="Sindrome genito-urinaria della menopausa"> Sindrome genito-urinaria della menopausa <em>(locale)</em></label>
-          <label class="opt"><input type="checkbox" name="cond" value="Vulvodinia"> Vulvodinia <em>(locale)</em></label>
-          <label class="opt"><input type="checkbox" name="cond" value="Vestibolodinia provocata"> Vestibolodinia provocata <em>(locale)</em></label>
-          <label class="opt"><input type="checkbox" name="cond" value="Disturbi dell'umore"> Disturbi dell'umore <em>(sistemica)</em></label>
+
+          <div class="cond-wrap">
+            <label class="opt"><input type="checkbox" name="cond" value="HSDD" data-has-route="true" data-cond-id="cr-hsdd"> HSDD – disturbo del desiderio sessuale ipoattivo</label>
+            <div class="route-pick" id="cr-hsdd">
+              <span class="rp-label">Via di somministrazione</span>
+              <label class="rp-opt"><input type="radio" name="cr-hsdd" value="Sistemica"> Sistemica</label>
+              <label class="rp-opt"><input type="radio" name="cr-hsdd" value="Locale"> Locale</label>
+              <label class="rp-opt"><input type="radio" name="cr-hsdd" value="Entrambe"> Entrambe</label>
+              <span class="rp-err" id="e-cr-hsdd">Specifica la via di somministrazione.</span>
+            </div>
+          </div>
+
+          <div class="cond-wrap">
+            <label class="opt"><input type="checkbox" name="cond" value="Menopausa" data-has-route="true" data-cond-id="cr-meno"> Menopausa</label>
+            <div class="route-pick" id="cr-meno">
+              <span class="rp-label">Via di somministrazione</span>
+              <label class="rp-opt"><input type="radio" name="cr-meno" value="Sistemica"> Sistemica</label>
+              <label class="rp-opt"><input type="radio" name="cr-meno" value="Locale"> Locale</label>
+              <label class="rp-opt"><input type="radio" name="cr-meno" value="Entrambe"> Entrambe</label>
+              <span class="rp-err" id="e-cr-meno">Specifica la via di somministrazione.</span>
+            </div>
+          </div>
+
+          <div class="cond-wrap">
+            <label class="opt"><input type="checkbox" name="cond" value="Insufficienza ovarica precoce (POI)" data-has-route="true" data-cond-id="cr-poi"> Insufficienza ovarica precoce (POI)</label>
+            <div class="route-pick" id="cr-poi">
+              <span class="rp-label">Via di somministrazione</span>
+              <label class="rp-opt"><input type="radio" name="cr-poi" value="Sistemica"> Sistemica</label>
+              <label class="rp-opt"><input type="radio" name="cr-poi" value="Locale"> Locale</label>
+              <label class="rp-opt"><input type="radio" name="cr-poi" value="Entrambe"> Entrambe</label>
+              <span class="rp-err" id="e-cr-poi">Specifica la via di somministrazione.</span>
+            </div>
+          </div>
+
+          <div class="cond-wrap">
+            <label class="opt"><input type="checkbox" name="cond" value="Sindrome genito-urinaria della menopausa" data-has-route="true" data-cond-id="cr-sgum"> Sindrome genito-urinaria della menopausa</label>
+            <div class="route-pick" id="cr-sgum">
+              <span class="rp-label">Via di somministrazione</span>
+              <label class="rp-opt"><input type="radio" name="cr-sgum" value="Sistemica"> Sistemica</label>
+              <label class="rp-opt"><input type="radio" name="cr-sgum" value="Locale"> Locale</label>
+              <label class="rp-opt"><input type="radio" name="cr-sgum" value="Entrambe"> Entrambe</label>
+              <span class="rp-err" id="e-cr-sgum">Specifica la via di somministrazione.</span>
+            </div>
+          </div>
+
+          <div class="cond-wrap">
+            <label class="opt"><input type="checkbox" name="cond" value="Vulvodinia" data-has-route="true" data-cond-id="cr-vulvo"> Vulvodinia</label>
+            <div class="route-pick" id="cr-vulvo">
+              <span class="rp-label">Via di somministrazione</span>
+              <label class="rp-opt"><input type="radio" name="cr-vulvo" value="Sistemica"> Sistemica</label>
+              <label class="rp-opt"><input type="radio" name="cr-vulvo" value="Locale"> Locale</label>
+              <label class="rp-opt"><input type="radio" name="cr-vulvo" value="Entrambe"> Entrambe</label>
+              <span class="rp-err" id="e-cr-vulvo">Specifica la via di somministrazione.</span>
+            </div>
+          </div>
+
+          <div class="cond-wrap">
+            <label class="opt"><input type="checkbox" name="cond" value="Vestibolodinia provocata" data-has-route="true" data-cond-id="cr-vestib"> Vestibolodinia provocata</label>
+            <div class="route-pick" id="cr-vestib">
+              <span class="rp-label">Via di somministrazione</span>
+              <label class="rp-opt"><input type="radio" name="cr-vestib" value="Sistemica"> Sistemica</label>
+              <label class="rp-opt"><input type="radio" name="cr-vestib" value="Locale"> Locale</label>
+              <label class="rp-opt"><input type="radio" name="cr-vestib" value="Entrambe"> Entrambe</label>
+              <span class="rp-err" id="e-cr-vestib">Specifica la via di somministrazione.</span>
+            </div>
+          </div>
+
+          <div class="cond-wrap">
+            <label class="opt"><input type="checkbox" name="cond" value="Disturbi dell'umore" data-has-route="true" data-cond-id="cr-umore"> Disturbi dell'umore</label>
+            <div class="route-pick" id="cr-umore">
+              <span class="rp-label">Via di somministrazione</span>
+              <label class="rp-opt"><input type="radio" name="cr-umore" value="Sistemica"> Sistemica</label>
+              <label class="rp-opt"><input type="radio" name="cr-umore" value="Locale"> Locale</label>
+              <label class="rp-opt"><input type="radio" name="cr-umore" value="Entrambe"> Entrambe</label>
+              <span class="rp-err" id="e-cr-umore">Specifica la via di somministrazione.</span>
+            </div>
+          </div>
+
           <label class="opt"><input type="checkbox" name="cond" value="Non la prescrivo"> Non la prescrivo / Non applicabile</label>
           <label class="opt"><input type="checkbox" name="cond" value="Altro" id="cond-altro-c"> Altro</label>
+
         </div>
         <div class="cond" id="c-cond">
           <label>Specifica:</label>
@@ -477,17 +587,6 @@
           <label class="opt"><input type="radio" name="presc" value="No, mai"> No, mai</label>
         </div>
         <div class="err" id="e-presc">Campo obbligatorio.</div>
-      </div>
-
-      <!-- Sistemica o locale? (condizionale) -->
-      <div class="qb" id="qb-route" style="display:none">
-        <label class="qlabel">Se sì, prescrivi terapia sistemica o locale? <span class="req">*</span></label>
-        <div class="qhint">Puoi selezionare più opzioni</div>
-        <div class="opts" id="og-route">
-          <label class="opt"><input type="checkbox" name="route" value="Sistemica"> Sistemica</label>
-          <label class="opt"><input type="checkbox" name="route" value="Locale"> Locale</label>
-        </div>
-        <div class="err" id="e-route">Seleziona almeno un'opzione.</div>
       </div>
 
       <div class="nav">
@@ -726,7 +825,7 @@
    Sostituisci l'URL qui sotto con l'URL del tuo Google Apps Script
    dopo il deployment come Web App.
 ================================================================= */
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxkYVumSHyKrsR4mx6FiDlWJ3serSJfYRJWbQNv3EzcdFzFnRKo8-K6I4i9ek9jR-TL0g/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwh17f7XaynqlD8wVpCGeoN4dglOy5-mTMZ3JIDlmdHFmtosfFCTJB1jbcd8hef1UZZ/exec";
 
 /* ================================================================
    Step management
@@ -816,13 +915,18 @@ function validate(step) {
     req('train', 'e-train', 'check');
   }
   if (step === 3) {
-    req('cond',  'e-cond',  'check');
+    // At least one condition checked
+    if (!checkAny('cond')) { show('e-cond'); ok = false; } else hide('e-cond');
+    // Every checked condition with a route must have one selected
+    document.querySelectorAll('input[name="cond"][data-has-route="true"]:checked').forEach(cb => {
+      const rid = cb.dataset.condId;
+      const chosen = document.querySelector(`input[name="${rid}"]:checked`);
+      const errEl  = document.getElementById('e-' + rid);
+      if (!chosen) { if (errEl) errEl.classList.add('vis'); ok = false; }
+      else         { if (errEl) errEl.classList.remove('vis'); }
+    });
     req('params','e-params','check');
     req('presc', 'e-presc', 'radio');
-    // Valida "route" solo se prescrive
-    if (radio('presc') && radio('presc') !== 'No, mai') {
-      req('route', 'e-route', 'check');
-    }
   }
   if (step === 4) {
     req('form',    'e-form',    'check');
@@ -838,6 +942,23 @@ function validate(step) {
     req('impr',    'e-impr',    'check');
   }
   return ok;
+}
+
+/* ================================================================
+   Collect per-condition route selections → "HSDD – Sistemica; …"
+================================================================= */
+function collectConditions() {
+  const parts = [];
+  document.querySelectorAll('input[name="cond"]:checked').forEach(cb => {
+    const rid = cb.dataset.condId;
+    if (rid) {
+      const rv = document.querySelector(`input[name="${rid}"]:checked`);
+      parts.push(cb.value + (rv ? ` – ${rv.value}` : ''));
+    } else {
+      parts.push(cb.value);
+    }
+  });
+  return parts.join('; ');
 }
 
 /* ================================================================
@@ -860,12 +981,11 @@ function submitSurvey() {
     freq_female_sd:        radio('freq'),
     training:              checks('train'),
     training_other:        txt('q-train-o'),
-    conditions_t:          checks('cond'),
+    conditions_t:          collectConditions(),
     conditions_t_other:    txt('q-cond-o'),
     parameters_t:          checks('params'),
     parameters_t_other:    txt('q-params-o'),
     prescribes_t:          radio('presc'),
-    route_systemic_local:  checks('route'),
     formulations:          checks('form'),
     formulations_other:    txt('q-form-o'),
     prescription_mgmt:     checks('mgmt'),
@@ -936,15 +1056,6 @@ function wire() {
     });
   });
 
-  // Prescrivi T → mostra/nascondi domanda sistemica/locale
-  document.querySelectorAll('input[name="presc"]').forEach(r =>
-    r.addEventListener('change', () => {
-      const showRoute = r.checked && r.value !== 'No, mai';
-      document.getElementById('qb-route').style.display = showRoute ? 'block' : 'none';
-      if (!showRoute) document.querySelectorAll('input[name="route"]').forEach(c => c.checked = false);
-    })
-  );
-
   // Monitoraggio "Altro"
   byId('monitor-altro-c')?.addEventListener('change', function() { toggle('c-monitor', this.checked); });
 
@@ -960,6 +1071,32 @@ function wire() {
 
   // Formazione "Altro"
   byId('train-altro-c')?.addEventListener('change', function() { toggle('c-train', this.checked); });
+
+  // Condizioni: show/hide route-pick per ogni checkbox con route
+  document.querySelectorAll('input[name="cond"][data-has-route="true"]').forEach(cb => {
+    cb.addEventListener('change', () => {
+      const rp  = document.getElementById(cb.dataset.condId);
+      const err = document.getElementById('e-' + cb.dataset.condId);
+      if (cb.checked) {
+        rp?.classList.add('vis');
+      } else {
+        rp?.classList.remove('vis');
+        // Clear the route radio and its error on uncheck
+        document.querySelectorAll(`input[name="${cb.dataset.condId}"]`).forEach(r => r.checked = false);
+        rp?.querySelectorAll('.rp-opt').forEach(l => l.classList.remove('sel'));
+        if (err) err.classList.remove('vis');
+      }
+    });
+  });
+
+  // Highlight selected route pill
+  document.querySelectorAll('.route-pick').forEach(rp => {
+    rp.addEventListener('change', e => {
+      if (e.target.type !== 'radio') return;
+      rp.querySelectorAll('.rp-opt').forEach(l => l.classList.remove('sel'));
+      e.target.closest('.rp-opt')?.classList.add('sel');
+    });
+  });
 
   // Condizioni "Altro"
   byId('cond-altro-c')?.addEventListener('change', function() { toggle('c-cond', this.checked); });
